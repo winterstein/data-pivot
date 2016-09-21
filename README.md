@@ -14,21 +14,21 @@ pivot can sum numbers and collect multiple values into arrays (this and other se
 
 Let's see a few examples:
 
-  var mydata = {
-    monday: {apples:1},
-    tuesday: {apples:2, pears:1}
-  }
+    var mydata = {
+      monday: {apples:1},
+      tuesday: {apples:2, pears:1}
+    }
 
-  // Reverse the map: What day did I buy pears?  
-  var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').run();  
-  // Multiple values become an array, single values are left as-is.
-  // So the output is {apples:['monday','tuesday'], pears:'tuesday'}
+    // Reverse the map: What day did I buy pears?  
+    var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').run();  
+    // Multiple values become an array, single values are left as-is.
+    // So the output is {apples:['monday','tuesday'], pears:'tuesday'}
 
-  // Suppose we always want arrays, even if there's only one value.
-  // Use mode('array') like this:
-  var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('array').run();  
-  // output is {apples:['monday','tuesday'], pears:['tuesday']}
+    // Suppose we always want arrays, even if there's only one value.
+    // Use mode('array') like this:
+    var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('array').run();  
+    // output is {apples:['monday','tuesday'], pears:['tuesday']}
 
-  // Forget the day (this will sum over the days)
-  var totalPerFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> n').run();  
-  // output is {apples:3, pears:1}
+    // Forget the day (this will sum over the days)
+    var totalPerFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> n').run();  
+    // output is {apples:3, pears:1}
