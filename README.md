@@ -14,6 +14,14 @@ pivot can sum numbers and collect multiple values into arrays (this and other se
 
 Let's see a few examples:
 
+## Installation: No dependencies, just one small file
+
+**In html?** Download pivot.js, then use: `<script src='pivot.js'></script>`
+
+**In node?** `npm install data-pivot`
+
+## Javascript (pivot.js)
+
     var mydata = {
       monday: {apples:1},
       tuesday: {apples:2, pears:1}
@@ -32,3 +40,7 @@ Let's see a few examples:
     // Forget the day (this will sum over the days)
     var totalPerFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> n').run();  
     // output is {apples:3, pears:1}
+
+## Python (pivot.py)
+
+Also available in Python! The Python version is included here -- see pivot.py
