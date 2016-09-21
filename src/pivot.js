@@ -2,10 +2,21 @@
 // A tool for re-arranging data
 // Copyright 2016 Daniel Winterstein
 
+/** Create a new pivot. Call run() to process the data. */
+function pivot(data, inputSchema, outputSchema) {
+    return new Pivotter(data, inputSchema, outputSchema);
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = pivot;
+}
+
 function Pivotter(data, inputSchema, outputSchema) {
   this.data = data;
   this.inputSchema = inputSchema.split(/\s*->\s*/);
   this.outputSchema = outputSchema.split(/\s*->\s*/);
+  // What property-name to use if a property is unset.
+  // E.g. if you pivot "a -> b" to "a -> c -> b" 
   this.unset = {'unset':'unset'};
 }
 
@@ -117,11 +128,3 @@ Pivotter.prototype.set = function(outputobj, path) {
     o = newo;
   }
 };
-
-function pivot(data, inputSchema, outputSchema) {
-    return new Pivotter(data, inputSchema, outputSchema);
-}
-
-if (typeof module !== 'undefined') {
-  module.exports = pivot;
-}

@@ -74,6 +74,21 @@ describe('pivot', function() {
     assert.equal(output['jedi']['name'], 'Luke');
   });
 
+  it('should handle unset properties', function() {
+    var input = {jedi:'Luke', smuggler:'Hans'};
+    var output = pivot(input, "role -> name", 'role -> actor -> name').run();
+    console.log(output);
+    assert.equal(output['jedi']['unset'], 'Luke');
+  });
+
+// TODO
+  // it('should handle sibling properties using {}s', function() {
+  //   var input = {jedi:{name:'Luke', weapon:'light saber'}, smuggler:{name:'Hans'}};
+  //   var output = pivot(input, "role -> {'name' -> n, 'weapon' -> w}", 'n -> w').run();
+  //   console.log(output);
+  //   assert.equal(output['Luke'], 'light saber');
+  // });
+
   it('should run the readme examples!', function() {
     var mydata = {
       monday: {apples:1},
