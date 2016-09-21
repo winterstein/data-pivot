@@ -1,11 +1,8 @@
 {
   "name": "data-pivot",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A tool for re-arranging data.",
-  "main": "lib/pivot.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "src/pivot.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:winterstein/data-pivot.git"
