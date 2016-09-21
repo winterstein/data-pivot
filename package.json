@@ -1,26 +1,28 @@
 {
-  "name": "pivot-crossfilter",
-  "version": "1.0.1",
-  "description": "A simple pivot function for crossfilter.",
+  "name": "data-pivot",
+  "version": "0.0.1",
+  "description": "A tool for re-arranging data.",
   "main": "lib/pivot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/petermoresi/pivot-crossfilter.git"
+    "url": "git@github.com:winterstein/data-pivot.git"
   },
   "keywords": [
     "pivot",
+    "data tool",
     "crossfilter"
   ],
-  "author": "Peter Moresi",
+  "author": "Daniel Winterstein",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/petermoresi/pivot-crossfilter/issues"
+    "url": "https://github.com/winterstein/data-pivot/issues"
   },
-  "homepage": "https://github.com/petermoresi/pivot-crossfilter#readme",
+  "homepage": "https://github.com/winterstein/data-pivot#readme",
   "dependencies": {
-    "crossfilter": "^1.3.12"
+  },
+  "devDependencies": {
   }
 }
