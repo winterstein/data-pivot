@@ -17,6 +17,7 @@ if (typeof module !== 'undefined') {
 // string constants for mode()
 pivot.ARRAY = 'array';
 pivot.SUM = 'sum';
+pivot.FIRST = 'first';
 
 function Pivotter(data, inputSchema, outputSchema) {
   this.data = data;
@@ -33,7 +34,7 @@ isArray = function(obj) {
 }
 
 Pivotter.prototype.mode = function(m) {
-  if (m && ! m in [pivot.SUM, pivot.ARRAY]) throw Error("Unrecognised mode "+m);
+  if (m && ! m in [pivot.SUM, pivot.ARRAY, pivot.FIRST]) throw Error("Unrecognised mode "+m);
   this.mode = m;
   return this;
 };
@@ -106,6 +107,10 @@ Pivotter.prototype.set = function(outputobj, path) {
       // normal case
       if ( ! old) {
         o[prevk] = k;
+        return;
+      }
+      // first value wins?
+      if (this.mode===Pivot.FIRST) {
         return;
       }
       // sum? NB: mode != array
