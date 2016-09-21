@@ -25,12 +25,10 @@ Let's see a few examples:
   // output is {apples:['monday','tuesday'], pears:'tuesday'}
 
   // Suppose we always want arrays, even if there's only one value.
-  // Use mode('list') like this:
-  var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('list').run();  
+  // Use mode('array') like this:
+  var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('array').run();  
   // output is {apples:['monday','tuesday'], pears:['tuesday']}
 
   // forget the day (this will sum over the days)
   var totalPerFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> n').run();  
   // output is {apples:3, pears:1}
-
-TODO

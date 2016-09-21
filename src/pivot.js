@@ -2,7 +2,10 @@
 // A tool for re-arranging data
 // Copyright 2016 Daniel Winterstein
 
-/** Create a new pivot. Call run() to process the data. */
+/** Create a new pivot.
+    Call run() to process the data.
+    Options: see mode()
+*/
 function pivot(data, inputSchema, outputSchema) {
     return new Pivotter(data, inputSchema, outputSchema);
 }
@@ -11,12 +14,16 @@ if (typeof module !== 'undefined') {
   module.exports = pivot;
 }
 
+// string constants for mode()
+pivot.ARRAY = 'array';
+pivot.SUM = 'sum';
+
 function Pivotter(data, inputSchema, outputSchema) {
   this.data = data;
   this.inputSchema = inputSchema.split(/\s*->\s*/);
   this.outputSchema = outputSchema.split(/\s*->\s*/);
   // What property-name to use if a property is unset.
-  // E.g. if you pivot "a -> b" to "a -> c -> b" 
+  // E.g. if you pivot "a -> b" to "a -> c -> b"
   this.unset = {'unset':'unset'};
 }
 
@@ -26,7 +33,7 @@ isArray = function(obj) {
 }
 
 Pivotter.prototype.mode = function(m) {
-  if (m && ! m in ['sum','list']) throw Error("Unrecognised mode "+m);
+  if (m && ! m in [pivot.SUM, pivot.ARRAY]) throw Error("Unrecognised mode "+m);
   this.mode = m;
   return this;
 };
@@ -88,7 +95,7 @@ Pivotter.prototype.set = function(outputobj, path) {
       // output leaf node -- set the value
       var old = o[prevk];
       // Always output lists?
-      if (this.mode === 'list') {
+      if (this.mode === pivot.ARRAY) {
         if ( ! old) {
           old = [];
           o[prevk] = old;
@@ -101,7 +108,7 @@ Pivotter.prototype.set = function(outputobj, path) {
         o[prevk] = k;
         return;
       }
-      // sum? NB: mode != list
+      // sum? NB: mode != array
       if (typeof old === 'number') {
         o[prevk] = old + k;
       } else {

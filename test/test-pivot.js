@@ -49,10 +49,10 @@ describe('pivot', function() {
     assert.equal(output['pears'], 50);
   });
 
-  it('should list (not sum) number values if mode=list', function() {
+  it('should list (not sum) number values if mode=array', function() {
     var input = {'tesco': {'apples':100,'pears':50}, 'coop': {'apples':200}, 'm&s':{'apples':3}};
     var output = pivot(input, 'store -> fruit -> n', 'fruit -> n')
-                  .mode('list')
+                  .mode('array')
                   .run();
     console.log(output);
     assert.equal(output['pears'][0], 50);
@@ -105,7 +105,7 @@ describe('pivot', function() {
 
     // Suppose we always want arrays, even if there's only one value.
     // Use mode('list') like this:
-    daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('list').run();
+    daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('array').run();
     // output is {apples:['monday','tuesday'], pears:['tuesday']}
     assert.equal(daysByFruit['apples'][0],'monday');
     assert.equal(daysByFruit['apples'][1],'tuesday');
