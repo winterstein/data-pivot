@@ -1,9 +1,35 @@
 <html>
 <head>
-  <script src='../src/pivot.js'></script>
-  <script src='test-pivot-html.js'></script>
+    <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+    <script src='../src/pivot.js'></script>
 </head>
 <body>
+    A bare bones web page for experiments &amp; debugging.
+    Pop open the console and play...
+
+
+<div id="mocha"></div>
+
+<!-- <script src="https://cdn.rawgit.com/jquery/jquery/2.1.4/dist/jquery.min.js"></script> -->
+<script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
+<script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+
+<script>
+mocha.setup('bdd');
+
+assert = {
+        equal: function(a, b) {
+            if (a == b) return;
+            throw Error(a+" != "+b);
+        }
+};
+</script>
+<script src="test.pivot.js"></script>
+<script>
+  mocha.checkLeaks();
+  // mocha.globals(['jQuery']);
+  mocha.run();
+</script>
 
 </body>
 </html>

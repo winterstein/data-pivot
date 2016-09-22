@@ -45,20 +45,22 @@ Pivotter.prototype.run = function() {
   return output;
 };
 Pivotter.prototype.run2 = function(dataobj, depth, path, outputobj) {
-  console.log("run2", dataobj, depth, JSON.stringify(path), JSON.stringify(outputobj));
+  // console.log("run2", dataobj, depth, JSON.stringify(path), JSON.stringify(outputobj));
   var kName = this.inputSchema[depth];
   // a fixed property, indicated by quotes?
   if (kName[0] === "'" || kName[0]==='"') {
     var k = kName.substr(1,kName.length-2);
     // derefernce dataobj
     var v = dataobj[k];
-    console.log("deref",kName,k,v,dataobj);
+    // console.log("deref",kName,k,v,dataobj);
     if ( ! v) return;
     this.run2(v, depth+1, path, outputobj);
     return;
   }
-  // literal?
-  if (typeof dataobj === 'number' || typeof dataobj === 'string') {
+  // literal or end-of-the-line?
+  if (typeof dataobj === 'number' || typeof dataobj === 'string'
+        || depth === this.inputSchema.length-1)
+  {
     path[kName] = dataobj;
     // Now set the output
     this.set(outputobj, path);
@@ -79,7 +81,7 @@ Pivotter.prototype.run2 = function(dataobj, depth, path, outputobj) {
 }
 
 Pivotter.prototype.set = function(outputobj, path) {
-  console.log('set', path);
+  // console.log('set', path);
   var o = outputobj;
   var prevk;
   for(var ki=0; ki<this.outputSchema.length; ki++) {
@@ -110,7 +112,7 @@ Pivotter.prototype.set = function(outputobj, path) {
         return;
       }
       // first value wins?
-      if (this.mode===Pivot.FIRST) {
+      if (this.mode===pivot.FIRST) {
         return;
       }
       // sum? NB: mode != array
@@ -132,7 +134,7 @@ Pivotter.prototype.set = function(outputobj, path) {
       continue;
     }
     // get/make an object
-    newo = o[k];
+    var newo = o[k];
     if ( ! newo) {
       newo = {};
       o[k] = newo;
