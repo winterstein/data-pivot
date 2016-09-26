@@ -15,6 +15,13 @@ describe('pivot', function() {
     assert.equal(typeof(pivot), 'function');
   });
 
+  it('should handle lists of input values', function() {
+    var mydata = {'monday':['apples','pears'], 'tuesday':['pears']};
+    var output = pivot(mydata, "day -> fruit[]", "fruit -> day").run();
+    console.log(output)
+    assert.equal(output['pears'], 'tuesday')
+  });
+
   it('should pluck', function() {
      var input = {'Mark':'Hammill', 'Harrison':'Ford'};
      var output = pivot(input, 'fn -> sn', 'sn').run();
