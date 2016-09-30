@@ -72,7 +72,11 @@ Pivotter.prototype.run2 = function(dataobj, depth, path, outputobj) {
   }
   for (var k in dataobj) {
     if ( ! dataobj.hasOwnProperty(k)) continue;
-    var path2 = path; // TODO copy!
+    var path2 = {}; // shallow copy path
+    for(p in path) {
+      path2[p] = path[p];
+    }
+    // and add k
     path2[kName] = k;
     var v = dataobj[k];
     if ( ! v ) continue;
