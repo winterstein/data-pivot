@@ -40,7 +40,3 @@ Let's see a few examples:
     // Forget the day (this will sum over the days)
     var totalPerFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> n').run();  
     // output is {apples:3, pears:1}
-
-## Python (pivot.py)
-
-Also available in Python! The Python version is included here -- see pivot.py
