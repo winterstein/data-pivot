@@ -1,6 +1,20 @@
 // data-pivot
 // A tool for re-arranging data
 // Copyright 2016 Daniel Winterstein
+/*
+
+EXAMPLE
+
+fruitEating = {
+  monday: {apple:2, pear:1},
+  tuesday: {apple:1, banana:1},
+};
+
+pivot(fruitEating, 'day -> fruit -> num', 'fruit -> num').run();
+
+returns: {apple: 3, pear:1, banana: 1}
+
+*/
 
 /** Create a new pivot.
     Call run() to process the data.
@@ -28,7 +42,7 @@ function Pivotter(data, inputSchema, outputSchema) {
   this.unset = {'unset':'unset'};
 }
 
-isArray = function(obj) {
+const isArray = function(obj) {
   // Is there a nicer way to test this??
   return obj && (typeof obj !== 'string') && (typeof obj.length === 'number');
 }
@@ -44,6 +58,7 @@ Pivotter.prototype.run = function() {
   this.run2(this.data, 0, {}, output);
   return output;
 };
+
 Pivotter.prototype.run2 = function(dataobj, depth, path, outputobj) {
   // console.log("run2", dataobj, depth, JSON.stringify(path), JSON.stringify(outputobj));
   var kName = this.inputSchema[depth];
@@ -73,7 +88,7 @@ Pivotter.prototype.run2 = function(dataobj, depth, path, outputobj) {
   for (var k in dataobj) {
     if ( ! dataobj.hasOwnProperty(k)) continue;
     var path2 = {}; // shallow copy path
-    for(p in path) {
+    for(let p in path) {
       path2[p] = path[p];
     }
     // and add k
@@ -82,7 +97,7 @@ Pivotter.prototype.run2 = function(dataobj, depth, path, outputobj) {
     if ( ! v ) continue;
     this.run2(v, depth+1, path2, outputobj);
   }
-}
+}; // /run2()
 
 Pivotter.prototype.set = function(outputobj, path) {
   // console.log('set', path);
@@ -129,7 +144,7 @@ Pivotter.prototype.set = function(outputobj, path) {
         o[prevk] = old;
       }
       return;
-    }
+    } // ./ if output leaf
     if ( ! k) k = this.unset.unset;
     if ( ! k) return; // skip this
     // almost the leaf node -- we don't need another object
@@ -145,4 +160,4 @@ Pivotter.prototype.set = function(outputobj, path) {
     }
     o = newo;
   }
-};
+}; // ./set()
