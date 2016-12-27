@@ -10,7 +10,7 @@ fruitEating = {
   tuesday: {apple:1, banana:1},
 };
 
-pivot(fruitEating, 'day -> fruit -> num', 'fruit -> num').run();
+pivot(fruitEating, 'day -> fruit -> num', 'fruit -> num');
 
 returns: {apple: 3, pear:1, banana: 1}
 
@@ -18,28 +18,30 @@ returns: {apple: 3, pear:1, banana: 1}
 
 /** Create a new pivot.
     Call run() to process the data.
-    Options: see mode()
 */
-function pivot(data, inputSchema, outputSchema) {
-    return new Pivotter(data, inputSchema, outputSchema);
+function pivot(data, inputSchema, outputSchema, options) {
+    return new Pivotter(data, inputSchema, outputSchema, options).run();
 }
 
 if (typeof module !== 'undefined') {
   module.exports = pivot;
 }
 
-// string constants for mode()
+// string constants for mode
 pivot.ARRAY = 'array';
 pivot.SUM = 'sum';
 pivot.FIRST = 'first';
 
-function Pivotter(data, inputSchema, outputSchema) {
+function Pivotter(data, inputSchema, outputSchema, options) {
   this.data = data;
   this.inputSchema = inputSchema.split(/\s*->\s*/);
   this.outputSchema = outputSchema.split(/\s*->\s*/);
+  this.options = options || {};
+  // Set defaults
   // What property-name to use if a property is unset.
   // E.g. if you pivot "a -> b" to "a -> c -> b"
-  this.unset = {'unset':'unset'};
+  if ( ! this.options.unset) this.options.unset = 'unset';
+  if ( ! this.options.mode) this.options.mode = pivot.SUM;
 }
 
 const isArray = function(obj) {
@@ -47,15 +49,13 @@ const isArray = function(obj) {
   return obj && (typeof obj !== 'string') && (typeof obj.length === 'number');
 }
 
-Pivotter.prototype.mode = function(m) {
-  if (m && ! m in [pivot.SUM, pivot.ARRAY, pivot.FIRST]) throw Error("Unrecognised mode "+m);
-  this.mode = m;
-  return this;
-};
-
 Pivotter.prototype.run = function() {
-  var output = {};
+  let output = {};
   this.run2(this.data, 0, {}, output);
+  // pluck?
+  if (this.outputSchema.length==1) {
+    output = output[this.options.unset];
+  }
   return output;
 };
 
@@ -102,7 +102,7 @@ Pivotter.prototype.run2 = function(dataobj, depth, path, outputobj) {
 Pivotter.prototype.set = function(outputobj, path) {
   // console.log('set', path);
   var o = outputobj;
-  var prevk;
+  var prevk = this.options.unset; // usually this gets set, except if the output is just a pluck
   for(var ki=0; ki<this.outputSchema.length; ki++) {
     var kNamei = this.outputSchema[ki];
     var k;
@@ -117,7 +117,7 @@ Pivotter.prototype.set = function(outputobj, path) {
       // output leaf node -- set the value
       var old = o[prevk];
       // Always output lists?
-      if (this.mode === pivot.ARRAY) {
+      if (this.options.mode === pivot.ARRAY) {
         if ( ! old) {
           old = [];
           o[prevk] = old;
@@ -131,7 +131,7 @@ Pivotter.prototype.set = function(outputobj, path) {
         return;
       }
       // first value wins?
-      if (this.mode===pivot.FIRST) {
+      if (this.options.mode===pivot.FIRST) {
         return;
       }
       // sum? NB: mode != array
@@ -145,7 +145,7 @@ Pivotter.prototype.set = function(outputobj, path) {
       }
       return;
     } // ./ if output leaf
-    if ( ! k) k = this.unset.unset;
+    if ( ! k) k = this.options.unset;
     if ( ! k) return; // skip this
     // almost the leaf node -- we don't need another object
     if (ki === this.outputSchema.length-2) {
