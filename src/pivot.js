@@ -29,7 +29,9 @@ if (typeof module !== 'undefined') {
 
 // string constants for mode
 pivot.ARRAY = 'array';
-pivot.SUM = 'sum';
+pivot.SET = 'set';
+/** sum: sum numbers, for non-numbers eg strings etc collect them into sets */
+pivot.SUM = 'sum'; 
 pivot.FIRST = 'first';
 
 function Pivotter(data, inputSchema, outputSchema, options) {
@@ -119,14 +121,16 @@ Pivotter.prototype.set = function(outputobj, path) {
       // output leaf node -- set the value
       var old = o[prevk];
       // Always output lists?
-      if (this.options.mode === pivot.ARRAY) {
+      if (this.options.mode === pivot.ARRAY || this.options.mode === pivot.SET) {
         if ( ! old) {
           old = [];
           o[prevk] = old;
         }
-        old.push(k);
+        if (this.options.mode === pivot.ARRAY || old.indexOf(k)==-1) {
+          old.push(k);
+        }
         return;
-      }
+      } // ./ array or set
       // normal case
       if ( ! old) {
         o[prevk] = k;
@@ -142,7 +146,10 @@ Pivotter.prototype.set = function(outputobj, path) {
       } else {
         // convert to list
         if ( ! isArray(old)) old = [old];
-        old.push(k);
+        // sets (no duplicates) by default
+        if (old.indexOf(k)==-1) {
+          old.push(k);
+        }
         o[prevk] = old;
       }
       return;

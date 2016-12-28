@@ -96,6 +96,16 @@ describe('pivot', function() {
     assert.equal(output['apples'][1], 200);
   });
 
+  it('mode=array vs mode=set', function() {
+    var input = {'tesco': {'apples':100,'pears':50}, 'coop': {'apples':200}, 'm&s':{'apples':3,'mango':2}};
+    var fruits = pivot(input, 'store -> fruit -> n', 'fruit', {mode:'array'});
+    var fruits2 = pivot(input, 'store -> fruit -> n', 'fruit', {mode:'set'});
+    assert.equal(fruits.length, 5);
+    assert.equal(fruits2.length, 3);
+    console.log("ARRAY", fruits);
+    console.log("SET", fruits2);
+  });
+
   it('should lookup "quoted" properties', function() {
     var input = {jedi:{name:'Luke'}, smuggler:{name:'Hans'}};
     var output = pivot(input, "role -> 'name' -> n", 'n -> role');

@@ -28,15 +28,15 @@ Let's see a few examples:
     }
 
     // Reverse the map: What day did I buy pears?  
-    var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').run();  
+    var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day');  
     // Multiple values become an array, single values are left as-is.
     // So the output is {apples:['monday','tuesday'], pears:'tuesday'}
 
     // Suppose we always want arrays, even if there's only one value.
     // Use mode('array') like this:
-    var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('array').run();  
+    var daysByFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> day').mode('array');  
     // output is {apples:['monday','tuesday'], pears:['tuesday']}
 
     // Forget the day (this will sum over the days)
-    var totalPerFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> n').run();  
+    var totalPerFruit = pivot(mydata,'day -> fruit -> n', 'fruit -> n');  
     // output is {apples:3, pears:1}
