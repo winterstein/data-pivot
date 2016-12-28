@@ -34,6 +34,8 @@ pivot.FIRST = 'first';
 
 function Pivotter(data, inputSchema, outputSchema, options) {
   this.data = data;
+  // Hack: to get e.g. fruit[] to work, convert it into index -> fruit
+  inputSchema = inputSchema.replace(/(\w+)\[\]/g, function(m,g1,i) {return "_index"+i+" -> "+g1;});
   this.inputSchema = inputSchema.split(/\s*->\s*/);
   this.outputSchema = outputSchema.split(/\s*->\s*/);
   this.options = options || {};

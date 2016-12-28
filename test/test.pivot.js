@@ -18,8 +18,8 @@ describe('pivot', function() {
   it('should handle lists of input values', function() {
     var mydata = {'monday':['apples','pears'], 'tuesday':['pears']};
     var output = pivot(mydata, "day -> fruit[]", "fruit -> day");
-    console.log(output)
-    assert.equal(output['pears'], 'tuesday')
+    console.log(output);
+    assert.equal(output['apples'], 'monday');
   });
 
   it('should pluck', function() {
@@ -124,6 +124,18 @@ describe('pivot', function() {
   //   console.log(output);
   //   assert.equal(output['Luke'], 'light saber');
   // });
+
+  it('TODO should decipher records', function() {
+    var mydata = [
+      {day:'monday', fruit:'apples', n:1},
+      {day:'tuesday', fruit:'apples', n:1},
+      {day:'tuesday', fruit:'pears', n:3}
+    ];
+
+    var fruits = pivot(mydata, null, 'fruit -> n');
+    assert.equal(fruits['apples'], 2);
+    assert.equal(fruits['pears'], 3);
+  });
 
   it('should run the readme examples!', function() {
     var mydata = {
