@@ -36,8 +36,8 @@
     "eslint-plugin-jsx-a11y": "^4.0.0"	  
   },
   "scripts": {
-    "build": "babel src --out-dir bin",
-    "watch": "babel src --out-dir bin --watch",
+    "build": "babel src --out-dir bin --source-maps",
+    "watch": "babel src --out-dir bin --source-maps --watch",
     "prepublish": "npm run build"
   }
 }

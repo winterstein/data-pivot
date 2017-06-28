@@ -21,7 +21,6 @@ returns: {apple: 3, pear:1, banana: 1}
 */
 function pivot(data, inputSchema, outputSchema, options) {
 	const pivotter = new Pivotter(data, inputSchema, outputSchema, options);
-	console.warn("pivotter", pivotter);
     return pivotter.run();
 }
 
@@ -42,13 +41,91 @@ const isArray = function(obj) {
   return obj && (typeof obj !== 'string') && (typeof obj.length === 'number');
 }
 
+const parseSchema = (schemaString) => {
+	let path = [];
+	parseSchema2(schemaString, path, 0);
+	return path;
+}
+
+/**
+ * Test for the first "matching" index i 
+ * @returns true if i is the lowest value != -1
+ */
+const isFirst = (i, ...others) => {
+	if (i===-1) return false;
+	for(let oi=0; oi<others.length; oi++) {
+		if (others[oi] !== -1 && others[oi] < i) return false;
+	}
+	return true;
+};
+
+/**
+ * 
+ * @param {*} schemaString 
+ * @param {*} leaf
+ * @returns unparsed
+ */
+const parseSchema2 = (schemaString, leaf, bracketDepth) => {
+	console.log("parseSchema2", schemaString, leaf, bracketDepth);
+	schemaString = schemaString.trim();
+	if (schemaString === '') return '';
+	let bi = schemaString.indexOf('{');	
+	let bic = schemaString.indexOf('}');
+	let ai = schemaString.indexOf('->');
+	let ci = schemaString.indexOf(',');	
+	// pop a bracket?
+	if (isFirst(bic, bi, ai, ci)) {
+		leaf.push(schemaString.substr(0, bic));
+		return schemaString.substr(bic); // leave the closing } in for the loop belwo to spot
+	}
+	if (bi==-1 && ai==-1 && ci==-1) {
+		// done	
+		leaf.push(schemaString);
+		return '';
+	}
+	// a -> stuff
+	if (isFirst(ai, bi, ci)) {
+		let bit = schemaString.substr(0, ai);
+		leaf.push(bit.trim());
+		let unparsed = parseSchema2(schemaString.substr(ai+2), leaf, bracketDepth);
+		return unparsed;
+	}
+	// , other-stuff
+	if (isFirst(ci, bi)) {
+		let bit = schemaString.substr(0, ci).trim();
+		if (bit !== '') leaf.push(bit);
+		let otherSchemaString = schemaString.substr(ci+1);
+		return otherSchemaString;
+	}
+	// {sub-tree-1, sub-tree-2}
+	let bit = schemaString.substr(0, bi);
+	// bit must be a blank string!
+	let subSchemaString = schemaString.substr(bi+1);
+	for(var d=0; d<100; d++)	 {
+		let subleaf = [];
+		leaf.push(subleaf);
+		let unparsed = parseSchema2(subSchemaString, subleaf, bracketDepth + 1).trim();
+		if (unparsed[0] === '}') {
+			return unparsed.substr(1);
+		}		
+		subSchemaString = unparsed;
+	}
+	throw new Error("Too deep! No closing } found - aborting parse of schema at: "+schemaString);
+}; // ./parseSchema
+// for debug
+window.parseSchema = parseSchema;
+
 class Pivotter {
 	constructor(data, inputSchema, outputSchema, options) {
 		this.data = data;
 		// Hack: to get e.g. fruit[] to work, convert it into index -> fruit
 		inputSchema = inputSchema.replace(/(\w+)\[\]/g, function(m,g1,i) {return "_index"+i+" -> "+g1;});
-		this.inputSchema = inputSchema.split(/\s*->\s*/);
-		this.outputSchema = outputSchema.split(/\s*->\s*/);
+		/**
+		 * Object[] the schema tree, each element is either a String, or a sub-tree.
+		 * Sub-trees are created by {} brackets.
+		 */
+		this.inputSchema = parseSchema(inputSchema); // inputSchema.split(/\s*->\s*/);
+		this.outputSchema = parseSchema(outputSchema); // .split(/\s*->\s*/);
 		this.options = options || {};
 		// Set defaults
 		// What property-name to use if a property is unset.
@@ -70,6 +147,7 @@ class Pivotter {
 	run2(dataobj, depth, path, outputobj) {
 		// console.log("run2", dataobj, depth, JSON.stringify(path), JSON.stringify(outputobj));
 		var kName = this.inputSchema[depth];
+		// TODO support sub-trees
 		// a fixed property, indicated by quotes?
 		if (kName[0] === "'" || kName[0]==='"') {
 			var k = kName.substr(1,kName.length-2);
@@ -177,3 +255,6 @@ class Pivotter {
 
 } // ./Pivotter
 
+export {
+	parseSchema
+}

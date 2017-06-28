@@ -10,6 +10,56 @@ if (typeof pivot === 'undefined') {
 
 describe('pivot', function() {
 
+	it('should handle one ES bucket', function() {
+		let data = {"key_as_string":"2017-06-22T18:00:00.000Z","doc_count":1};
+		console.log("one ES data", data);
+		let cdata = pivot(data, "{'doc_count' -> dc, 'key_as_string' -> kas}", 
+								"kas -> dc");		
+		console.log("simple ES data out", cdata);
+		// TODO allow {a} as shorthand for {'a' -> a}
+		// let cdata2 = pivot(data, "'buckets' -> bi -> {'doc_count', 'key_as_string'}", 
+		// 						"doc_count -> key_as_string");
+	});	
+
+	it('should handle simple ES outputs', function() {
+		let data = {"buckets":[{"key_as_string":"2017-06-22T18:00:00.000Z","doc_count":1},{"key_as_string":"2017-06-22T19:00:00.000Z","doc_count":2}]};
+		console.log("simple ES data", data);
+		let cdata = pivot(data, "'buckets' -> bi -> {'doc_count' -> dc, 'key_as_string' -> kas}", 
+								"kas -> dc");		
+		console.log("simple ES data out", cdata);
+		// TODO allow {a} as shorthand for {'a' -> a}
+		// let cdata2 = pivot(data, "'buckets' -> bi -> {'doc_count', 'key_as_string'}", 
+		// 						"doc_count -> key_as_string");
+	});	
+
+	it('should handle ES outputs', function() {
+		let data = {"byEvent":{"doc_count_error_upper_bound":0,"sum_other_doc_count":0,"buckets":[{"doc_count":4,"events_over_time":{"buckets":[{"key_as_string":"2017-06-22T18:00:00.000Z","doc_count":1,"key":1498154400000},{"key_as_string":"2017-06-22T19:00:00.000Z","doc_count":0,"key":1498158000000},{"key_as_string":"2017-06-22T20:00:00.000Z","doc_count":0,"key":1498161600000},{"key_as_string":"2017-06-22T21:00:00.000Z","doc_count":0,"key":1498165200000},{"key_as_string":"2017-06-22T22:00:00.000Z","doc_count":0,"key":1498168800000},{"key_as_string":"2017-06-22T23:00:00.000Z","doc_count":0,"key":1498172400000},{"key_as_string":"2017-06-23T00:00:00.000Z","doc_count":0,"key":1498176000000},{"key_as_string":"2017-06-23T01:00:00.000Z","doc_count":0,"key":1498179600000},{"key_as_string":"2017-06-23T02:00:00.000Z","doc_count":0,"key":1498183200000},{"key_as_string":"2017-06-23T03:00:00.000Z","doc_count":0,"key":1498186800000},{"key_as_string":"2017-06-23T04:00:00.000Z","doc_count":0,"key":1498190400000},{"key_as_string":"2017-06-23T05:00:00.000Z","doc_count":0,"key":1498194000000},{"key_as_string":"2017-06-23T06:00:00.000Z","doc_count":0,"key":1498197600000},{"key_as_string":"2017-06-23T07:00:00.000Z","doc_count":0,"key":1498201200000},{"key_as_string":"2017-06-23T08:00:00.000Z","doc_count":0,"key":1498204800000},{"key_as_string":"2017-06-23T09:00:00.000Z","doc_count":0,"key":1498208400000},{"key_as_string":"2017-06-23T10:00:00.000Z","doc_count":0,"key":1498212000000},{"key_as_string":"2017-06-23T11:00:00.000Z","doc_count":0,"key":1498215600000},{"key_as_string":"2017-06-23T12:00:00.000Z","doc_count":0,"key":1498219200000},{"key_as_string":"2017-06-23T13:00:00.000Z","doc_count":0,"key":1498222800000},{"key_as_string":"2017-06-23T14:00:00.000Z","doc_count":3,"key":1498226400000}]},"key":"visible"},{"doc_count":3,"events_over_time":{"buckets":[{"key_as_string":"2017-06-22T17:00:00.000Z","doc_count":1,"key":1498150800000},{"key_as_string":"2017-06-22T18:00:00.000Z","doc_count":0,"key":1498154400000},{"key_as_string":"2017-06-22T19:00:00.000Z","doc_count":0,"key":1498158000000},{"key_as_string":"2017-06-22T20:00:00.000Z","doc_count":0,"key":1498161600000},{"key_as_string":"2017-06-22T21:00:00.000Z","doc_count":0,"key":1498165200000},{"key_as_string":"2017-06-22T22:00:00.000Z","doc_count":0,"key":1498168800000},{"key_as_string":"2017-06-22T23:00:00.000Z","doc_count":0,"key":1498172400000},{"key_as_string":"2017-06-23T00:00:00.000Z","doc_count":0,"key":1498176000000},{"key_as_string":"2017-06-23T01:00:00.000Z","doc_count":0,"key":1498179600000},{"key_as_string":"2017-06-23T02:00:00.000Z","doc_count":0,"key":1498183200000},{"key_as_string":"2017-06-23T03:00:00.000Z","doc_count":0,"key":1498186800000},{"key_as_string":"2017-06-23T04:00:00.000Z","doc_count":0,"key":1498190400000},{"key_as_string":"2017-06-23T05:00:00.000Z","doc_count":0,"key":1498194000000},{"key_as_string":"2017-06-23T06:00:00.000Z","doc_count":0,"key":1498197600000},{"key_as_string":"2017-06-23T07:00:00.000Z","doc_count":0,"key":1498201200000},{"key_as_string":"2017-06-23T08:00:00.000Z","doc_count":0,"key":1498204800000},{"key_as_string":"2017-06-23T09:00:00.000Z","doc_count":0,"key":1498208400000},{"key_as_string":"2017-06-23T10:00:00.000Z","doc_count":0,"key":1498212000000},{"key_as_string":"2017-06-23T11:00:00.000Z","doc_count":0,"key":1498215600000},{"key_as_string":"2017-06-23T12:00:00.000Z","doc_count":0,"key":1498219200000},{"key_as_string":"2017-06-23T13:00:00.000Z","doc_count":0,"key":1498222800000},{"key_as_string":"2017-06-23T14:00:00.000Z","doc_count":2,"key":1498226400000}]},"key":"close"},{"doc_count":3,"events_over_time":{"buckets":[{"key_as_string":"2017-06-22T18:00:00.000Z","doc_count":1,"key":1498154400000},{"key_as_string":"2017-06-22T19:00:00.000Z","doc_count":0,"key":1498158000000},{"key_as_string":"2017-06-22T20:00:00.000Z","doc_count":0,"key":1498161600000},{"key_as_string":"2017-06-22T21:00:00.000Z","doc_count":0,"key":1498165200000},{"key_as_string":"2017-06-22T22:00:00.000Z","doc_count":0,"key":1498168800000},{"key_as_string":"2017-06-22T23:00:00.000Z","doc_count":0,"key":1498172400000},{"key_as_string":"2017-06-23T00:00:00.000Z","doc_count":0,"key":1498176000000},{"key_as_string":"2017-06-23T01:00:00.000Z","doc_count":0,"key":1498179600000},{"key_as_string":"2017-06-23T02:00:00.000Z","doc_count":0,"key":1498183200000},{"key_as_string":"2017-06-23T03:00:00.000Z","doc_count":0,"key":1498186800000},{"key_as_string":"2017-06-23T04:00:00.000Z","doc_count":0,"key":1498190400000},{"key_as_string":"2017-06-23T05:00:00.000Z","doc_count":0,"key":1498194000000},{"key_as_string":"2017-06-23T06:00:00.000Z","doc_count":0,"key":1498197600000},{"key_as_string":"2017-06-23T07:00:00.000Z","doc_count":0,"key":1498201200000},{"key_as_string":"2017-06-23T08:00:00.000Z","doc_count":0,"key":1498204800000},{"key_as_string":"2017-06-23T09:00:00.000Z","doc_count":0,"key":1498208400000},{"key_as_string":"2017-06-23T10:00:00.000Z","doc_count":0,"key":1498212000000},{"key_as_string":"2017-06-23T11:00:00.000Z","doc_count":0,"key":1498215600000},{"key_as_string":"2017-06-23T12:00:00.000Z","doc_count":0,"key":1498219200000},{"key_as_string":"2017-06-23T13:00:00.000Z","doc_count":0,"key":1498222800000},{"key_as_string":"2017-06-23T14:00:00.000Z","doc_count":2,"key":1498226400000}]},"key":"mouseover"},{"doc_count":3,"events_over_time":{"buckets":[{"key_as_string":"2017-06-23T14:00:00.000Z","doc_count":3,"key":1498226400000}]},"key":"opened"},{"doc_count":2,"events_over_time":{"buckets":[{"key_as_string":"2017-06-23T14:00:00.000Z","doc_count":2,"key":1498226400000}]},"key":"open"}]},"ecount":{"min":1,"avg":1,"max":1,"count":15,"sum":15}};
+		console.log("byEvent data", data);
+		let cdata = pivot(data, "'byEvent' -> 'buckets' -> bi -> {'key', 'events_over_time' -> 'buckets' -> bi2 -> {'doc_count', 'key_as_string'}}", 
+								"key -> key_as_string -> doc_count");
+	});
+
+
+  it('TODO should decipher records', function() {
+    var mydata = [
+      {day:'monday', fruit:'apples', n:1},
+      {day:'tuesday', fruit:'apples', n:1},
+      {day:'tuesday', fruit:'pears', n:3}
+    ];
+
+    var fruits = pivot(mydata, null, 'fruit -> n');
+    assert.equal(fruits['apples'], 2);
+    assert.equal(fruits['pears'], 3);
+  });
+
+  it('TODO should handle sibling properties using {}s', function() {
+    var input = {jedi:{name:'Luke', weapon:'light saber'}, smuggler:{name:'Hans'}};
+    var output = pivot(input, "role -> {'name' -> n, 'weapon' -> w}", 'n -> w');
+    console.log(output);
+    assert.equal(output['Luke'], 'light saber');
+  });
+
+
   it('should be loaded here', function() {
     console.log(pivot, typeof(pivot));
     assert.equal(typeof(pivot), 'function');
@@ -125,26 +175,6 @@ describe('pivot', function() {
     var output = pivot(input, "role -> name", 'role -> actor -> name');
     console.log(output);
     assert.equal(output['jedi']['unset'], 'Luke');
-  });
-
-// TODO
-  // it('should handle sibling properties using {}s', function() {
-  //   var input = {jedi:{name:'Luke', weapon:'light saber'}, smuggler:{name:'Hans'}};
-  //   var output = pivot(input, "role -> {'name' -> n, 'weapon' -> w}", 'n -> w');
-  //   console.log(output);
-  //   assert.equal(output['Luke'], 'light saber');
-  // });
-
-  it('TODO should decipher records', function() {
-    var mydata = [
-      {day:'monday', fruit:'apples', n:1},
-      {day:'tuesday', fruit:'apples', n:1},
-      {day:'tuesday', fruit:'pears', n:3}
-    ];
-
-    var fruits = pivot(mydata, null, 'fruit -> n');
-    assert.equal(fruits['apples'], 2);
-    assert.equal(fruits['pears'], 3);
   });
 
   it('should run the readme examples!', function() {
