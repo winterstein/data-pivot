@@ -11,14 +11,15 @@ if (typeof pivot === 'undefined') {
 describe('pivot', function() {
 
 	it('should handle one ES bucket', function() {
-		let data = {"key_as_string":"2017-06-22T18:00:00.000Z","doc_count":1};
+		let data = {"key_as_string":"mykey","doc_count":7};
 		console.log("one ES data", data);
 		let cdata = pivot(data, "{'doc_count' -> dc, 'key_as_string' -> kas}", 
-								"kas -> dc");		
+								"kas -> dc", {mode: pivot.FIRST, unset: false});		
 		console.log("simple ES data out", cdata);
 		// TODO allow {a} as shorthand for {'a' -> a}
 		// let cdata2 = pivot(data, "'buckets' -> bi -> {'doc_count', 'key_as_string'}", 
 		// 						"doc_count -> key_as_string");
+		assert.equal(cdata["mykey"], 7);
 	});	
 
 	it('should handle simple ES outputs', function() {
@@ -27,6 +28,7 @@ describe('pivot', function() {
 		let cdata = pivot(data, "'buckets' -> bi -> {'doc_count' -> dc, 'key_as_string' -> kas}", 
 								"kas -> dc");		
 		console.log("simple ES data out", cdata);
+		assert.equal(cdata["2017"], 1);
 		// TODO allow {a} as shorthand for {'a' -> a}
 		// let cdata2 = pivot(data, "'buckets' -> bi -> {'doc_count', 'key_as_string'}", 
 		// 						"doc_count -> key_as_string");
@@ -40,7 +42,7 @@ describe('pivot', function() {
 	});
 
 
-  it('TODO should decipher records', function() {
+  it('TODO should decipher records: null inputSchema => work it out', function() {
     var mydata = [
       {day:'monday', fruit:'apples', n:1},
       {day:'tuesday', fruit:'apples', n:1},
@@ -52,9 +54,9 @@ describe('pivot', function() {
     assert.equal(fruits['pears'], 3);
   });
 
-  it('TODO should handle sibling properties using {}s', function() {
+  it('should handle sibling properties using {}s', function() {
     var input = {jedi:{name:'Luke', weapon:'light saber'}, smuggler:{name:'Hans'}};
-    var output = pivot(input, "role -> {'name' -> n, 'weapon' -> w}", 'n -> w');
+    var output = pivot(input, "role -> {'name' -> n, 'weapon' -> w}", "n -> w");
     console.log(output);
     assert.equal(output['Luke'], 'light saber');
   });
@@ -95,6 +97,7 @@ describe('pivot', function() {
   it('should handle object values', function() {
       var input = {'star-wars': {'jedi':{'sn':'Skywalker', 'fn':'Luke'}, 'smuggler':{'sn':'Solo', 'fn':'Hans'}}};
       var output = pivot(input, 'film -> role -> person', 'film -> person');
+	  console.log('should handle object values', output);
       var peeps = output['star-wars'];
       assert.equal(peeps.length, 2);
       assert.equal(peeps[0].fn, 'Luke');
