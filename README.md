@@ -3,11 +3,11 @@
 Status: early version!
 
 pivot makes it easy to rearrange JSON objects (or other objects).
-It takes 3 arguments, then you call run():
+It takes 3 arguments:
 
-  pivot(data, inputSchema, outputSchema).run()
+  pivot(data, inputSchema, outputSchema)
 
-The schemas use a simple string format like this: "top-key -> middle-key -> value".
+The schemas use a simple string format like this: "top-key -> middle-key -> value"
 You can call the keys anything you like - they get matched between inputSchema and outputSchema.
 
 pivot can sum numbers and collect multiple values into arrays (this and other settings can be configured).

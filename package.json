@@ -1,8 +1,8 @@
 {
   "name": "data-pivot",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "A tool for re-arranging data.",
-  "main": "src/pivot.js",
+  "main": "./bin/pivot.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:winterstein/data-pivot.git"
@@ -18,8 +18,26 @@
     "url": "https://github.com/winterstein/data-pivot/issues"
   },
   "homepage": "https://github.com/winterstein/data-pivot#readme",
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
   "dependencies": {
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+	"babili": "^0.0.12",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0"	  
+  },
+  "scripts": {
+    "build": "babel src --out-dir bin",
+    "watch": "babel src --out-dir bin --watch",
+    "prepublish": "npm run build"
   }
 }
