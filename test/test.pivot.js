@@ -63,6 +63,13 @@ describe('pivot', function() {
     assert.equal(output['Luke'], 'light saber');
   });
 
+	it('should handle {a, b} shorthand', function() {
+		var input = {jedi:{name:'Luke', weapon:'light saber'}, smuggler:{name:'Hans'}};
+		var output = pivot(input, "role -> {name, weapon}", "name -> weapon");
+		console.log(output);
+		assert.equal(output['Luke'], 'light saber');
+	});
+
 
   it('should be loaded here', function() {
     console.log(pivot, typeof(pivot));
