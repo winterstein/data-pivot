@@ -1,2 +1,4 @@
 npm-debug.log
 *.pyc
+bin
+node_modules

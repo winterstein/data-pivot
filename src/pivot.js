@@ -157,9 +157,14 @@ class Pivotter {
 	 * @param {*} depth 
 	 * @param {*} path 
 	 * @param {*} outputobj Stays fixed throughout the recursion
+	 * @returns {void}
 	 */
 	run2(dataobj, depth, path, outputobj, schema) {
-		console.log("run2", dataobj, depth, JSON.stringify(path), JSON.stringify(outputobj), schema);
+		// console.log("run2", dataobj, depth, JSON.stringify(path), JSON.stringify(outputobj), schema);
+		if (depth===schema.length) {
+			// end of the line
+			return;
+		}
 		var kName = schema[depth];
 		// A sub-tree in the schema
 		if (isArray(kName)) {
@@ -207,7 +212,7 @@ class Pivotter {
 	} // /run2()
 
 	set(outputobj, path) {
-		console.log('set', path);
+		// console.log('set', path);
 		var o = outputobj;
 		var prevk = this.options.unset; // usually this gets set, except if the output is just a pluck
 		for(var ki=0; ki<this.outputSchema.length; ki++) {
