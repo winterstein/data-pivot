@@ -211,12 +211,31 @@ class Pivotter {
 		}
 	} // /run2()
 
+	/**
+	 * 
+	 * @param {*} outputobj 
+	 * @param {*} path the objact with values to set into outputobj
+	 */
 	set(outputobj, path) {
+		return this.set(outputobj, path, this.outputSchema);
+	}
+
+	set(outputobj, path, schema) {
 		// console.log('set', path);
 		var o = outputobj;
 		var prevk = this.options.unset; // usually this gets set, except if the output is just a pluck
-		for(var ki=0; ki<this.outputSchema.length; ki++) {
-			var kNamei = this.outputSchema[ki];
+		for(var ki=0; ki<schema.length; ki++) {
+			var kNamei = schema[ki];
+			// A sub-tree in the schema
+			if (isArray(kName)) {
+				throw new Error("TODO set with tree schemas", schema);
+				// // make a joined up sub-schema				
+				// let schema2 = schema.slice(0, ki).concat(kName);
+				// this.set(outputobj, ki, path, schema2);
+				// // recurse to the later bits of schema
+				// this.run2(dataobj, depth+1, path, outputobj, schema);
+				// return; //throw new Error("TODO subtrees "+JSON.stringify(kName));
+			}
 			var k;
 			// a fixed property, indicated by quotes?
 			if (kNamei[0] === "'" || kNamei[0]==='"') {
