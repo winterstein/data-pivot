@@ -16,6 +16,12 @@ returns: {apple: 3, pear:1, banana: 1}
 
 */
 
+let _assert = (ok, ...msgs) => {
+	if (ok) return;
+	console.error("assert failed: ", ...msgs);
+	throw new Error("assert failed: "+msgs[0]);
+};
+
 /** 
  * Do a pivot!
 */
@@ -157,6 +163,7 @@ class Pivotter {
 	 * @param {*} depth 
 	 * @param {*} path 
 	 * @param {*} outputobj Stays fixed throughout the recursion
+	 * @param schema input schema
 	 * @returns {void}
 	 */
 	run2(dataobj, depth, path, outputobj, schema) {
@@ -165,7 +172,8 @@ class Pivotter {
 			// end of the line
 			return;
 		}
-		var kName = schema[depth];
+		const kName = schema[depth];
+		_assert(kName, "pivot.js - out of schema?!",schema,depth);
 		// A sub-tree in the schema
 		if (isArray(kName)) {
 			// make a joined up sub-schema
@@ -216,25 +224,30 @@ class Pivotter {
 	 * @param {*} outputobj 
 	 * @param {*} path the objact with values to set into outputobj
 	 */
-	set(outputobj, path) {
-		return this.set(outputobj, path, this.outputSchema);
-	}
-
 	set(outputobj, path, schema) {
+		if ( ! schema) {
+			schema = this.outputSchema;
+		}
 		// console.log('set', path);
-		var o = outputobj;
-		var prevk = this.options.unset; // usually this gets set, except if the output is just a pluck
-		for(var ki=0; ki<schema.length; ki++) {
-			var kNamei = schema[ki];
+		let o = outputobj;
+		let prevk = this.options.unset; // usually this gets set, except if the output is just a pluck
+		for(let ki=0; ki<schema.length; ki++) {
+			const kNamei = schema[ki];
+			_assert(kNamei, 'pivot.js - set() out of schema', schema, ki);
 			// A sub-tree in the schema
-			if (isArray(kName)) {
-				throw new Error("TODO set with tree schemas", schema);
-				// // make a joined up sub-schema				
-				// let schema2 = schema.slice(0, ki).concat(kName);
-				// this.set(outputobj, ki, path, schema2);
-				// // recurse to the later bits of schema
-				// this.run2(dataobj, depth+1, path, outputobj, schema);
-				// return; //throw new Error("TODO subtrees "+JSON.stringify(kName));
+			if (isArray(kNamei)) {
+				// throw new Error("TODO set with tree schemas", schema);
+				// make a joined up sub-schema				
+				let schema2 = schema.slice(0, ki).concat(kNamei);				
+				this.set(outputobj, path, schema2);
+				// recurse to the later bits of schema (NB: continue would lead to a weird schema)				
+				if (ki < schema.length - 1) {
+					let schema3 = schema.slice();
+					schema3.splice(ki, 1);
+					this.set(outputobj, path, schema3);
+				}
+				return; 
+				//throw new Error("TODO subtrees "+JSON.stringify(kName));
 			}
 			var k;
 			// a fixed property, indicated by quotes?
@@ -244,7 +257,7 @@ class Pivotter {
 				// normal case: lookup the key from the path we built
 				k = path[kNamei];
 			}
-			if (ki === this.outputSchema.length-1) {
+			if (ki === schema.length-1) {
 				if (prevk===null || prevk===undefined || prevk===false) {
 					return; // skip NB: only happens if options.unset = falsy. Do allow prevk=0 to work.				
 				}
@@ -287,7 +300,7 @@ class Pivotter {
 			if ( ! k) k = this.options.unset;
 			if ( ! k) return; // skip this
 			// almost the leaf node -- we don't need another object
-			if (ki === this.outputSchema.length-2) {
+			if (ki === schema.length-2) {
 				prevk = k;
 				continue;
 			}

@@ -35,12 +35,19 @@ describe('pivot', function() {
 		// 						"doc_count -> key_as_string");
 	});	
 
+	it('should handle ES key/value buckets', function() {
+		let cdata = {alice: {k:'jan', v:7} }
+		let xydata = pivot(cdata, "u -> {k, v}", "k -> v");
+		// console.warn("xydata", xydata);
+		assert.equal(xydata.jan, 7);
+	});
+
 	it('should create records', function() {
 		let cdata = {alice: [ {k:'jan', v:7, huh:-4}, {k:'feb', v:8, huh:10}] }
-		let xydata = pivot(cdata, "key -> i -> {k, v}", "key -> {'x' -> k, 'y' -> v}");
+		let xydata = pivot(cdata, "key -> i -> {k, v}", "key -> i -> {'x' -> k, 'y' -> v}");
 		console.warn("xydata", xydata);
-		assert.equal(xydata.alice[0].x === 'jan');
-		assert.equal(xydata.alice[0].y === 7);		
+		assert.equal(xydata.alice[0].y, 7);
+		assert.equal(xydata.alice[0].x, 'jan');		
 	});
 
 	it('should handle ES outputs', function() {
