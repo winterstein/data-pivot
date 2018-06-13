@@ -10,7 +10,7 @@ fruitEating = {
   tuesday: {apple:1, banana:1},
 };
 
-pivot(fruitEating, 'day -> fruit -> num', 'fruit -> num');
+pivot(fruitEating, 'day.fruit.num', 'fruit.num');
 
 returns: {apple: 3, pear:1, banana: 1}
 
@@ -77,7 +77,7 @@ const parseSchema2 = (schemaString, leaf, bracketDepth) => {
 	if (schemaString === '') return '';
 	let bi = schemaString.indexOf('{');	
 	let bic = schemaString.indexOf('}');
-	let ai = schemaString.indexOf('->');
+	let ai = schemaString.indexOf('.');
 	let ci = schemaString.indexOf(',');	
 	// pop a bracket?
 	if (isFirst(bic, bi, ai, ci)) {
@@ -89,11 +89,11 @@ const parseSchema2 = (schemaString, leaf, bracketDepth) => {
 		leaf.push(schemaString);
 		return '';
 	}
-	// a -> stuff
+	// a . stuff
 	if (isFirst(ai, bi, ci)) {
 		let bit = schemaString.substr(0, ai);
 		leaf.push(bit.trim());
-		let unparsed = parseSchema2(schemaString.substr(ai+2), leaf, bracketDepth);
+		let unparsed = parseSchema2(schemaString.substr(ai+1), leaf, bracketDepth);
 		return unparsed;
 	}
 	// , other-stuff
@@ -110,7 +110,7 @@ const parseSchema2 = (schemaString, leaf, bracketDepth) => {
 	for(var d=0; d<100; d++)	 {
 		let subleaf = [];		
 		let unparsed = parseSchema2(subSchemaString, subleaf, bracketDepth + 1).trim();
-		// allow {a} as shorthand for {'a' -> a}
+		// allow {a} as shorthand for {'a' . a}
 		if (subleaf.length === 1) {
 			// remove optional quotes, to allow {a} or {'a'} as equivalent
 			let prop = subleaf[0];
@@ -131,18 +131,18 @@ window.parseSchema = parseSchema;
 class Pivotter {
 	constructor(data, inputSchema, outputSchema, options) {
 		this.data = data;
-		// Hack: to get e.g. fruit[] to work, convert it into index -> fruit
-		inputSchema = inputSchema.replace(/(\w+)\[\]/g, function(m,g1,i) {return "_index"+i+" -> "+g1;});
+		// Hack: to get e.g. fruit[] to work, convert it into index . fruit
+		inputSchema = inputSchema.replace(/(\w+)\[\]/g, function(m,g1,i) {return "_index"+i+" . "+g1;});
 		/**
 		 * Object[] the schema tree, each element is either a String, or a sub-tree.
 		 * Sub-trees are created by {} brackets.
 		 */
-		this.inputSchema = parseSchema(inputSchema); // inputSchema.split(/\s*->\s*/);
-		this.outputSchema = parseSchema(outputSchema); // .split(/\s*->\s*/);
+		this.inputSchema = parseSchema(inputSchema); 
+		this.outputSchema = parseSchema(outputSchema); 
 		this.options = options || {};
 		// Set defaults
 		// What property-name to use if a property is unset.
-		// E.g. if you pivot "a -> b" to "a -> c -> b"
+		// E.g. if you pivot "a . b" to "a . c . b"
 		if (this.options.unset === undefined) this.options.unset = 'unset';
 		if ( ! this.options.mode) this.options.mode = pivot.SUM;
 	}
@@ -319,3 +319,4 @@ class Pivotter {
 export {
 	parseSchema
 }
+pivot.parseSchema = parseSchema;
