@@ -49,6 +49,8 @@ const isArray = function(obj) {
 
 const parseSchema = (schemaString) => {
 	let path = [];
+	// HACK a:b is the same as a.b
+	schemaString = schemaString.replace(/:/g,'.');
 	parseSchema2(schemaString, path, 0);
 	return path;
 }
