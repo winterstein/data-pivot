@@ -110,12 +110,11 @@ const parseSchema2 = (schemaString, leaf, bracketDepth) => {
 	for(var d=0; d<100; d++)	 {
 		let subleaf = [];		
 		let unparsed = parseSchema2(subSchemaString, subleaf, bracketDepth + 1).trim();
-		// allow {a} as shorthand for {'a' . a}
+		// allow {a} or {$a} as shorthand for {a . $a}
 		if (subleaf.length === 1) {
-			// remove optional quotes, to allow {a} or {'a'} as equivalent
 			let prop = subleaf[0];
-			if (prop[0]==="'" || prop[0]==='"') prop = prop.substr(1, prop.length-1);
-			subleaf = ["'"+prop+"'", prop];
+			if (prop[0]==='$') subleaf = [prop.slice(1), prop];
+			else subleaf = [prop, '$'+prop];
 		}
 		leaf.push(subleaf);
 		if (unparsed[0] === '}') {
@@ -131,8 +130,8 @@ window.parseSchema = parseSchema;
 class Pivotter {
 	constructor(data, inputSchema, outputSchema, options) {
 		this.data = data;
-		// Hack: to get e.g. fruit[] to work, convert it into index . fruit
-		inputSchema = inputSchema.replace(/(\w+)\[\]/g, function(m,g1,i) {return "_index"+i+" . "+g1;});
+		// Hack: to get e.g. $fruit[] to work, convert it into $index . $fruit
+		inputSchema = inputSchema.replace(/\$(\w+)\[\]/g, function(m,g1,i) {return "$_index"+i+" . $"+g1;});
 		/**
 		 * Object[] the schema tree, each element is either a String, or a sub-tree.
 		 * Sub-trees are created by {} brackets.
@@ -191,11 +190,11 @@ class Pivotter {
 			this.set(outputobj, path);
 			return;
 		} // ./literal
-		// a fixed property, indicated by quotes?
-		if (kName[0] === "'" || kName[0]==='"') {
-			var k = kName.substr(1,kName.length-2);
+		// a fixed property, indicated by no $?
+		if (kName[0] !== '$') {
+			const k = kName; //kName.substr(1,kName.length-2);
 			// dereference dataobj
-			var v = dataobj[k];
+			const v = dataobj[k];
 			// console.log("deref",kName,k,v,dataobj);
 			if ( ! v) return; //?? is falsy OK??
 			this.run2(v, depth+1, path, outputobj, schema);
@@ -203,14 +202,11 @@ class Pivotter {
 		}
 		// Array?
 		if (isArray(dataobj)) {
-
+			// TODO??
 		}
-		for (var k in dataobj) {
+		for (let k in dataobj) {
 			if ( ! dataobj.hasOwnProperty(k)) continue;
-			var path2 = {}; // shallow copy path
-			for(let p in path) {
-			path2[p] = path[p];
-			}
+			var path2 = Object.assign({}, path); // shallow copy path
 			// and add k
 			path2[kName] = k;
 			var v = dataobj[k];
@@ -236,7 +232,6 @@ class Pivotter {
 			_assert(kNamei, 'pivot.js - set() out of schema', schema, ki);
 			// A sub-tree in the schema
 			if (isArray(kNamei)) {
-				// throw new Error("TODO set with tree schemas", schema);
 				// make a joined up sub-schema				
 				let schema2 = schema.slice(0, ki).concat(kNamei);				
 				this.set(outputobj, path, schema2);
@@ -247,12 +242,11 @@ class Pivotter {
 					this.set(outputobj, path, schema3);
 				}
 				return; 
-				//throw new Error("TODO subtrees "+JSON.stringify(kName));
 			}
 			var k;
-			// a fixed property, indicated by quotes?
-			if (kNamei[0] === "'" || kNamei[0]==='"') {
-				k = kNamei.substr(1,kNamei.length-2);
+			// a fixed property, indicated by no $?
+			if (kNamei[0] !== "$") {
+				k = kNamei; //.substr(1,kNamei.length-2); pop quotes
 			} else {
 				// normal case: lookup the key from the path we built
 				k = path[kNamei];
