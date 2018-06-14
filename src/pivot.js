@@ -49,6 +49,9 @@ const isArray = function(obj) {
 
 const parseSchema = (schemaString) => {
 	let path = [];
+	// check for old format
+	_assert(schemaString.indexOf('->') === -1, "pivot.js old syntax -> (use . and $ instead) "+schemaString);
+	_assert(schemaString.indexOf('\'') === -1, "pivot.js old syntax ' (use . and $ instead) "+schemaString);
 	// HACK a:b is the same as a.b
 	schemaString = schemaString.replace(/:/g,'.');
 	parseSchema2(schemaString, path, 0);
@@ -132,14 +135,15 @@ window.parseSchema = parseSchema;
 class Pivotter {
 	constructor(data, inputSchema, outputSchema, options) {
 		this.data = data;
-		// Hack: to get e.g. $fruit[] to work, convert it into $index . $fruit
-		inputSchema = inputSchema.replace(/\$(\w+)\[\]/g, function(m,g1,i) {return "$_index"+i+" . $"+g1;});
+		// Hack: to get e.g. []$fruit to work, convert it into $index . $fruit
+		inputSchema = inputSchema.replace(/\[\]/g, function(m,g1,i) {return "$_index"+i+".";});
 		/**
 		 * Object[] the schema tree, each element is either a String, or a sub-tree.
 		 * Sub-trees are created by {} brackets.
 		 */
 		this.inputSchema = parseSchema(inputSchema); 
 		this.outputSchema = parseSchema(outputSchema); 
+		_assert(outputSchema.indexOf('$') !== -1, "pivot.js no variables in output "+outputSchema);
 		this.options = options || {};
 		// Set defaults
 		// What property-name to use if a property is unset.
@@ -149,6 +153,7 @@ class Pivotter {
 	}
 
 	run() {
+		_assert(this.data, "pivot.js - No data! input-schema: "+this.inputSchema);
 		let output = {};
 		this.run2(this.data, 0, {}, output, this.inputSchema);
 		// pluck?
@@ -168,6 +173,7 @@ class Pivotter {
 	 * @returns {void}
 	 */
 	run2(dataobj, depth, path, outputobj, schema) {
+		_assert(dataobj, "pivot.js - run2 No dataobj!", path, schema);
 		// console.log("run2", dataobj, depth, JSON.stringify(path), JSON.stringify(outputobj), schema);
 		if (depth===schema.length) {
 			// end of the line

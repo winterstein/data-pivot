@@ -1,6 +1,6 @@
 {
   "name": "data-pivot",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A tool for re-arranging data.",
   "main": "./bin/pivot.js",
   "repository": {

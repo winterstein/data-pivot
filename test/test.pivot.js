@@ -121,7 +121,7 @@ it('should handle a:b syntax', function() {
 
   it('should handle lists of input values', function() {
     var mydata = {'monday':['apples','pears'], 'tuesday':['pears']};
-    var output = pivot(mydata, "$day.$fruit[]", "$fruit.$day");
+    var output = pivot(mydata, "$day.[]$fruit", "$fruit.$day");
     console.log(output);
     assert.equal(output['apples'], 'monday');
   });
