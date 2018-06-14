@@ -1,7 +1,5 @@
 # Data Pivot (pivot.js)
 
-Status: early version!
-
 pivot makes it easy to rearrange JSON objects (or other objects).
 It takes 3 arguments:
 
